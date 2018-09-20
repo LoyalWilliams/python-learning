@@ -3,6 +3,7 @@ import urllib2
 import urllib
 from lxml import etree
 import re
+import time
 
 import smtplib  #加载smtplib模块
 from email.mime.text import MIMEText
@@ -61,11 +62,23 @@ class Spider():
         self.tiebaName = raw_input("请输入需要访问的贴吧：")
         self.beginPage = int(raw_input("请输入起始页："))
         self.endPage = int(raw_input("请输入终止页："))
+        self.count=0
 
         # 邮箱匹配规则
         self.pattern = re.compile(r'\d+@qq.com')
         self.url = 'http://tieba.baidu.com/f'
         self.ua_header = {"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1 Trident/5.0;"}
+
+    def myurlopen(self,request):
+        '''
+          访问30次歇0.5秒
+        :param request:
+        :return:
+        '''
+        self.count = self.count + 1
+        if (self.count / 30 == 0):
+            time.sleep(0.5)
+        return urllib2.urlopen(request)
 
     def tiebaSpider(self):
         '''
@@ -96,7 +109,7 @@ class Spider():
         :return: 
         '''
         req = urllib2.Request(url, headers = self.ua_header)
-        html = urllib2.urlopen(req).read()
+        html = self.myurlopen(req).read()
         # 解析html 为 HTML 文档
         selector=etree.HTML(html)
         # print html
@@ -109,7 +122,7 @@ class Spider():
         :return: qq邮箱列表
         '''
         request = urllib2.Request(url, headers=self.ua_header)
-        content_html = urllib2.urlopen(request).read()
+        content_html = self.myurlopen(request).read()
         # print content_html
         return self.pattern.findall(content_html)
 
@@ -137,11 +150,14 @@ def main():
     spider = Spider()
     # 返回一个贴吧帖子的链接列表
     links = spider.tiebaSpider()
-
+    #放到一个集合里去掉重复邮件
+    mailSet={''}
     for link in links:
         mails = spider.emailSpider(link)
         for qqMail in mails:
-            print qqMail
+            if qqMail not in mailSet:
+                mailSet.add(qqMail)
+                print qqMail
             # sendMail(sendFrom, qqMail, passwd, msg)
 
 
