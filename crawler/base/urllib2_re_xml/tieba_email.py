@@ -140,7 +140,7 @@ def sendMail(sendFrom, sendTo, passwd, msg, tryTimes=3):
     for i in range(1, tryTimes+1):  #
         ret = mail(sendFrom, sendTo, passwd, msg)
         if ret:
-            print("ok,邮件发送成功")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+            print("ok,成功把邮件发送到"+sendTo)  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
             break
         else:
             print("失败第[" + i + "/"+tryTimes+"]次,尝试重新发送")  # 如果发送失败则会返回filed
@@ -157,8 +157,9 @@ def main():
         for qqMail in mails:
             if qqMail not in mailSet:
                 mailSet.add(qqMail)
-                print qqMail
-            # sendMail(sendFrom, qqMail, passwd, msg)
+                # print qqMail
+                sendMail(sendFrom, qqMail, passwd, msg)
+
 
 
 if __name__ =="__main__":
