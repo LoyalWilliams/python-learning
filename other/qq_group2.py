@@ -28,7 +28,6 @@ class qqGroupSpider():
         driver.find_element_by_id('u').clear()  # 选择用户名框
         driver.find_element_by_id('u').send_keys(qq)
         driver.find_element_by_id('p').clear()
-        # driver.find_element_by_id('p').send_keys('s.ysyw92456')
         driver.find_element_by_id('p').send_keys(passwd)
         driver.find_element_by_class_name("login_button").click()
 
